@@ -1,0 +1,19 @@
+{
+  "name": "nodejs_file-systematization",
+  "version": "1.0.0",
+  "description": "file systematization util, just for study project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Klimenko Ivan",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^5.16.0"
+  },
+  "dependencies": {
+    "del": "^4.1.1",
+    "minimist": "^1.2.0"
+  }
+}
