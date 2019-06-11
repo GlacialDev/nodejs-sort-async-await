@@ -18,10 +18,9 @@ const sortFiles = (oldDir, newDir, delOld) => {
             sortFiles(localDir, newDir);
           } else {
             let newDirForItem = path.join(newDir, item[0]);
-            try {
-              fs.mkdirSync(newDirForItem);
-            } catch (err) {}
-            fs.link(localDir, path.join(newDirForItem, item), err => {});
+            fs.mkdir(newDirForItem, err => {
+              fs.link(localDir, path.join(newDirForItem, item), err => {});
+            });
           }
 
           if (delOld === true) {

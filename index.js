@@ -44,19 +44,16 @@ const sortFiles = async (oldDir, newDir) => {
       } else {
         // берем первую букву названия файла
         let newDirForItem = path.join(newDir, item[0]);
-        // если папки, соответствующей этой букве, нету, создаем; иначе ловим ошибку и игнорируем ее
-        // fs.access(newDirForItem, fs.constants.F_OK, err => {
-        //   console.log(`${newDirForItem} ${err ? "does not exist" : "exists"}`);
-        // });
 
-        let isDirExists = await isFilePathExists(newDirForItem);
-        console.log(isDirExists);
-        if (isDirExists) {
-          await link(localDir, path.join(newDirForItem, item));
-        } else {
-          await mkdir(newDirForItem);
-          await link(localDir, path.join(newDirForItem, item));
-        }
+        // try {
+        //   let state = await stat(newDirForItem);
+        //   await link(localDir, path.join(newDirForItem, item));
+        //   console.log(newDirForItem + " no err");
+        // } catch (err) {
+        //   await mkdir(newDirForItem);
+        //   await link(localDir, path.join(newDirForItem, item));
+        //   console.log(newDirForItem + " err");
+        // }
 
         // try {
         //   await access(newDirForItem, fs.constants.F_OK);
@@ -64,6 +61,15 @@ const sortFiles = async (oldDir, newDir) => {
         //   console.log(err);
         //   await mkdir(newDirForItem);
         // }
+
+        try {
+          await fs.promises.access(newDirForItem, fs.F_OK);
+          // The check succeeded
+        } catch (error) {
+          // The check failed
+          await mkdir(newDirForItem);
+        }
+        await link(localDir, path.join(newDirForItem, item));
 
         // try {
         //   await mkdir(newDirForItem);
