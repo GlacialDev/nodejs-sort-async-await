@@ -62,21 +62,21 @@ const sortFiles = async (oldDir, newDir) => {
         //   await mkdir(newDirForItem);
         // }
 
-        try {
-          await fs.promises.access(newDirForItem, fs.F_OK);
-          // The check succeeded
-        } catch (error) {
-          // The check failed
-          await mkdir(newDirForItem);
-        }
-        await link(localDir, path.join(newDirForItem, item));
-
         // try {
+        //   await fs.promises.access(newDirForItem, fs.F_OK);
+        //   // The check succeeded
+        // } catch (error) {
+        //   // The check failed
         //   await mkdir(newDirForItem);
-        // } catch (err) {}
+        // }
+        // await link(localDir, path.join(newDirForItem, item));
+
+        try {
+          await mkdir(newDirForItem);
+        } catch (err) {}
 
         // затем копируем файл
-        // await link(localDir, path.join(newDirForItem, item));
+        await link(localDir, path.join(newDirForItem, item));
       }
     });
   } catch (err) {
@@ -101,19 +101,19 @@ const deleteDirectory = async dirname => {
   await del(dirname);
 };
 
-const isFilePathExists = filePath => {
-  return new Promise((resolve, reject) => {
-    fs.stat(filePath, (err, stats) => {
-      if (err && err.code === "ENOENT") {
-        return resolve(false);
-      } else if (err) {
-        return reject(err);
-      }
-      if (stats.isFile() || stats.isDirectory()) {
-        return resolve(true);
-      }
-    });
-  });
-};
+// const isFilePathExists = filePath => {
+//   return new Promise((resolve, reject) => {
+//     fs.stat(filePath, (err, stats) => {
+//       if (err && err.code === "ENOENT") {
+//         return resolve(false);
+//       } else if (err) {
+//         return reject(err);
+//       }
+//       if (stats.isFile() || stats.isDirectory()) {
+//         return resolve(true);
+//       }
+//     });
+//   });
+// };
 
 startSort();
