@@ -18,8 +18,14 @@ const sortFiles = (oldDir, newDir, delOld) => {
             sortFiles(localDir, newDir);
           } else {
             let newDirForItem = path.join(newDir, item[0]);
-            fs.mkdir(newDirForItem, err => {
-              fs.link(localDir, path.join(newDirForItem, item), err => {});
+            fs.access(newDirForItem, fs.F_OK, err => {
+              if (err) {
+                fs.mkdir(newDirForItem, err => {
+                  fs.link(localDir, path.join(newDirForItem, item), err => {});
+                });
+              } else {
+                fs.link(localDir, path.join(newDirForItem, item), err => {});
+              }
             });
           }
 

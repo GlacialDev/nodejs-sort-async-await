@@ -8,7 +8,7 @@ const readdir = util.promisify(fs.readdir);
 const mkdir = util.promisify(fs.mkdir);
 const stat = util.promisify(fs.stat);
 const link = util.promisify(fs.link);
-// const access = util.promisify(fs.access);
+const access = util.promisify(fs.access);
 
 const startSort = async () => {
   let oldDir = argv["from"] || "./images";
@@ -45,38 +45,19 @@ const sortFiles = async (oldDir, newDir) => {
         // берем первую букву названия файла
         let newDirForItem = path.join(newDir, item[0]);
 
-        // try {
-        //   let state = await stat(newDirForItem);
-        //   await link(localDir, path.join(newDirForItem, item));
-        //   console.log(newDirForItem + " no err");
-        // } catch (err) {
-        //   await mkdir(newDirForItem);
-        //   await link(localDir, path.join(newDirForItem, item));
-        //   console.log(newDirForItem + " err");
-        // }
-
-        // try {
-        //   await access(newDirForItem, fs.constants.F_OK);
-        // } catch (err) {
-        //   console.log(err);
-        //   await mkdir(newDirForItem);
-        // }
-
-        // try {
-        //   await fs.promises.access(newDirForItem, fs.F_OK);
-        //   // The check succeeded
-        // } catch (error) {
-        //   // The check failed
-        //   await mkdir(newDirForItem);
-        // }
-        // await link(localDir, path.join(newDirForItem, item));
-
-        try {
-          await mkdir(newDirForItem);
-        } catch (err) {}
-
-        // затем копируем файл
-        await link(localDir, path.join(newDirForItem, item));
+        access(newDirForItem, fs.F_OK)
+          .then(() => {
+            link(localDir, path.join(newDirForItem, item));
+          })
+          .catch(err => {
+            mkdir(newDirForItem)
+              .then(() => {
+                link(localDir, path.join(newDirForItem, item));
+              })
+              .catch(err => {
+                link(localDir, path.join(newDirForItem, item));
+              });
+          });
       }
     });
   } catch (err) {
@@ -100,20 +81,5 @@ const createDirectory = async dirname => {
 const deleteDirectory = async dirname => {
   await del(dirname);
 };
-
-// const isFilePathExists = filePath => {
-//   return new Promise((resolve, reject) => {
-//     fs.stat(filePath, (err, stats) => {
-//       if (err && err.code === "ENOENT") {
-//         return resolve(false);
-//       } else if (err) {
-//         return reject(err);
-//       }
-//       if (stats.isFile() || stats.isDirectory()) {
-//         return resolve(true);
-//       }
-//     });
-//   });
-// };
 
 startSort();
