@@ -45,19 +45,31 @@ const sortFiles = async (oldDir, newDir) => {
         // берем первую букву названия файла
         let newDirForItem = path.join(newDir, item[0]);
 
-        access(newDirForItem, fs.F_OK)
-          .then(() => {
-            link(localDir, path.join(newDirForItem, item));
-          })
-          .catch(err => {
-            mkdir(newDirForItem)
-              .then(() => {
-                link(localDir, path.join(newDirForItem, item));
-              })
-              .catch(err => {
-                link(localDir, path.join(newDirForItem, item));
-              });
-          });
+        // access(newDirForItem, fs.F_OK)
+        //   .then(() => {
+        //     link(localDir, path.join(newDirForItem, item));
+        //   })
+        //   .catch(err => {
+        //     mkdir(newDirForItem)
+        //       .then(() => {
+        //         link(localDir, path.join(newDirForItem, item));
+        //       })
+        //       .catch(err => {
+        //         link(localDir, path.join(newDirForItem, item));
+        //       });
+        //   });
+
+        try {
+          await access(newDirForItem, fs.F_OK);
+          await link(localDir, path.join(newDirForItem, item));
+        } catch (err) {
+          try {
+            await mkdir(newDirForItem);
+            await link(localDir, path.join(newDirForItem, item));
+          } catch (err) {
+            await link(localDir, path.join(newDirForItem, item));
+          }
+        }
       }
     });
   } catch (err) {
